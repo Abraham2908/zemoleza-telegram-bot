@@ -39,14 +39,19 @@ async def handle_webhook(update: TelegramUpdate, token: str = Depends(auth_teleg
         with open('hello.gif', 'rb') as photo:
             await bot.send_photo(chat_id=chat_id, photo=photo)
         await bot.send_message(chat_id=chat_id, text="Welcome to Cyclic Starter Python Telegram Bot!")
+
     elif text == "/recon":
-        domain = text.split()[1]
-        if not domain:
-            await bot.send_message(chat_id=chat_id, text="Por favor informe um domínio depois do comando. Ex: '/recon <domínio>'")
-            return
+     
+        if text.startswith("/recon"):
+            parts = text.split()
+            if len(parts) >= 2:
+                domain = parts[1]
+            else:
+                await bot.send_message(chat_id=chat_id, text="Por favor informe um domínio depois do comando. Ex: /recon <domínio>")
+                return
 
         await bot.send_message(chat_id=chat_id, text=f"Domínio: {domain}")
-        
+
         menu_keyboard = [[KeyboardButton(text="Subfinder")], [KeyboardButton(text="Cancelar")]]  
         markup = ReplyKeyboardMarkup(menu_keyboard)
 
