@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Depends
-from telegram import Update, Bot
+from telegram import Update, Bot, ReplyKeyboardMarkup, KeyboardButton
 from pydantic import BaseModel
 
 class TelegramUpdate(BaseModel):
@@ -40,25 +40,36 @@ async def handle_webhook(update: TelegramUpdate, token: str = Depends(auth_teleg
             await bot.send_photo(chat_id=chat_id, photo=photo)
         await bot.send_message(chat_id=chat_id, text="Welcome to Cyclic Starter Python Telegram Bot!")
     elif text == "/recon":
+        domain = text.split()[1]
+        if not domain:
+            await bot.send_message(chat_id=chat_id, text="Por favor informe um domínio depois do comando. Ex: '/recon <domínio>'")
+            return
+
+        await bot.send_message(chat_id=chat_id, text=f"Domínio: {domain}")
         
-        #domain = message.text.split()[1]
+        menu_keyboard = [[KeyboardButton(text="Subfinder")], [KeyboardButton(text="Cancelar")]]  
+        markup = ReplyKeyboardMarkup(menu_keyboard)
 
-
-        #btn1 = telebot.types.KeyboardButton('Subfinder')
-        #btn2 = telebot.types.KeyboardButton('Cancelar')
-
-        #markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
-
-        menu_keyboard = [[bot.KeyboardButton(text="Subfinder")], [bot.KeyboardButton(text="Cancelar")]]
-        markup = bot.ReplyKeyboardMarkup(menu_keyboard)
-
-        #markup.row(btn1, btn2)
-
-        #msg = bot.send_message(message.chat.id, "Escolha uma opção:",reply_markup=markup)
-        
-        await bot.send_message(chat_id=chat_id, reply_to_message_id=update.message["message_id"], text="Comando Recon meu chapa!", reply_markup=markup)
+        await bot.send_message(chat_id=chat_id, 
+                            reply_to_message_id=update.message["message_id"],
+                            text="Escolha uma opção:",
+                            reply_markup=markup)
 
     else:
         await bot.send_message(chat_id=chat_id, reply_to_message_id=update.message["message_id"], text="Yo!")
 
     return {"ok": True}
+
+@app.post("/webhook/")
+async def handle_menu(update: TelegramUpdate, token: str = Depends(auth_telegram_token)):
+  
+  chat_id = update.message["chat"]["id"]
+  text = update.message["text"]
+
+  if text == "Subfinder":
+      await bot.send_message(chat_id=chat_id, text="Executando Subfinder!")
+
+  elif text == "Cancelar":
+      await bot.send_message(chat_id=chat_id, text="Operação cancelada")  
+
+  return {"ok": True}
