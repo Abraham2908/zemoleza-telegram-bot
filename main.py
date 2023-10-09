@@ -16,15 +16,10 @@ load_dotenv()
 # Read the variable from the environment (or .env file)
 bot_token = os.getenv('BOT_TOKEN')
 secret_token = os.getenv("SECRET_TOKEN")
-# webhook_url = os.getenv('CYCLIC_URL', 'http://localhost:8181') + "/webhook/"
 
 bot = Bot(token=bot_token)
-# bot.set_webhook(url=webhook_url)
-# webhook_info = bot.get_webhook_info()
-# print(webhook_info)
 
 def auth_telegram_token(x_telegram_bot_api_secret_token: str = Header(None)) -> str:
-    # return true # uncomment to disable authentication
     if x_telegram_bot_api_secret_token != secret_token:
         raise HTTPException(status_code=403, detail="Not authenticated")
     return x_telegram_bot_api_secret_token
@@ -33,7 +28,6 @@ def auth_telegram_token(x_telegram_bot_api_secret_token: str = Header(None)) -> 
 async def handle_webhook(update: TelegramUpdate, token: str = Depends(auth_telegram_token)):
     chat_id = update.message["chat"]["id"]
     text = update.message["text"]
-    # print("Received message:", update.message)
 
     if text == "/start":
         with open('hello.gif', 'rb') as photo:
@@ -41,24 +35,27 @@ async def handle_webhook(update: TelegramUpdate, token: str = Depends(auth_teleg
         await bot.send_message(chat_id=chat_id, text="Bem vindo ao Zé Moleza, seu facilitador de ferramentas de Pentest!")
 
     elif text.startswith("/recon"):
-      
         parts = text.split()
         if len(parts) >= 2:
             domain = parts[1]
             await bot.send_message(chat_id=chat_id, text=f"Domínio: {domain}")
+            
+            # Responder apenas quando necessário
+            menu_keyboard = [[KeyboardButton(text="Subfinder")],[KeyboardButton(text="Cancelar")]]  
+            markup = ReplyKeyboardMarkup(menu_keyboard)
+
+            await bot.send_message(chat_id=chat_id, 
+                                   reply_markup=markup,
+                                   text="Escolha uma opção:")
         else:
             await bot.send_message(chat_id=chat_id, text="Por favor informe um domínio depois do comando. Ex: /recon <domínio>")
             return
         
-        menu_keyboard = [[KeyboardButton(text="Subfinder")],[KeyboardButton(text="Cancelar")]]  
-        markup = ReplyKeyboardMarkup(menu_keyboard)
-
-        await bot.send_message(chat_id=chat_id, 
-                            reply_to_message_id=update.message["message_id"],
-                            text="Escolha uma opção:",
-                            reply_markup=markup)
-
     else:
-        await bot.send_message(chat_id=chat_id, reply_to_message_id=update.message["message_id"], text="Yo!")
+        # Evite responder a mensagens que não têm uma mensagem original válida para responder
+        if "message_id" in update.message:
+            await bot.send_message(chat_id=chat_id,
+                                   reply_to_message_id=update.message["message_id"],
+                                   text="Yo!")
 
     return {"ok": True}
