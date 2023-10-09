@@ -50,7 +50,7 @@ async def handle_webhook(update: TelegramUpdate, token: str = Depends(auth_teleg
             await bot.send_message(chat_id=chat_id, text="Por favor informe um domínio depois do comando. Ex: /recon <domínio>")
             return
         
-        menu_keyboard = [[KeyboardButton(text="Subfinder", callback_data="/menu")],[KeyboardButton(text="Cancelar", callback_data="/menu")]]  
+        menu_keyboard = [[KeyboardButton(text="Subfinder")],[KeyboardButton(text="Cancelar")]]  
         markup = ReplyKeyboardMarkup(menu_keyboard)
 
         await bot.send_message(chat_id=chat_id, 
@@ -62,17 +62,3 @@ async def handle_webhook(update: TelegramUpdate, token: str = Depends(auth_teleg
         await bot.send_message(chat_id=chat_id, reply_to_message_id=update.message["message_id"], text="Yo!")
 
     return {"ok": True}
-
-@app.post("/menu")
-async def handle_menu(update: TelegramUpdate, token: str = Depends(auth_telegram_token)):
-  
-  chat_id = update.message["chat"]["id"]
-  text = update.message["text"]
-
-  if text == "Subfinder":
-      await bot.send_message(chat_id=chat_id, text="Executando Subfinder!")
-
-  elif text == "Cancelar":
-      await bot.send_message(chat_id=chat_id, text="Operação cancelada")  
-
-  return {"ok": True}
