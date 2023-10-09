@@ -18,6 +18,7 @@ bot_token = os.getenv('BOT_TOKEN')
 secret_token = os.getenv("SECRET_TOKEN")
 # webhook_url = os.getenv('CYCLIC_URL', 'http://localhost:8181') + "/webhook/"
 
+
 bot = Bot(token=bot_token)
 # bot.set_webhook(url=webhook_url)
 # webhook_info = bot.get_webhook_info()
