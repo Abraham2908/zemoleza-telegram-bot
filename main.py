@@ -51,8 +51,8 @@ async def handle_webhook(update: TelegramUpdate, token: str = Depends(auth_teleg
             return
         
         menu_keyboard = [
-            [KeyboardButton(text="Subfinder", callback_data="/menu")],
-            [KeyboardButton(text="Cancelar", callback_data="/menu")]
+            [KeyboardButton(text="Subfinder")],
+            [KeyboardButton(text="Cancelar")]
         ]  
         markup = ReplyKeyboardMarkup(menu_keyboard)
 
