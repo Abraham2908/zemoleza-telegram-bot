@@ -54,7 +54,7 @@ async def handle_webhook(update: TelegramUpdate, token: str = Depends(auth_teleg
             [KeyboardButton(text="Subfinder", callback_data="/menu")],
             [KeyboardButton(text="Cancelar", callback_data="/menu")]
         ]  
-        markup = ReplyKeyboardMarkup(menu_keyboard, one_time_keyboard=True)
+        markup = ReplyKeyboardMarkup(menu_keyboard)
 
         await bot.send_message(chat_id=chat_id, 
                             reply_to_message_id=update.message["message_id"],
