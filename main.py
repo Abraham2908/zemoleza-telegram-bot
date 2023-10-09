@@ -50,10 +50,7 @@ async def handle_webhook(update: TelegramUpdate, token: str = Depends(auth_teleg
             await bot.send_message(chat_id=chat_id, text="Por favor informe um domínio depois do comando. Ex: /recon <domínio>")
             return
         
-        menu_keyboard = [
-            [KeyboardButton(text="Subfinder")],
-            [KeyboardButton(text="Cancelar")]
-        ]  
+        menu_keyboard = [[KeyboardButton(text="Subfinder", callback_data="/menu")],[KeyboardButton(text="Cancelar", callback_data="/menu")]]  
         markup = ReplyKeyboardMarkup(menu_keyboard)
 
         await bot.send_message(chat_id=chat_id, 
